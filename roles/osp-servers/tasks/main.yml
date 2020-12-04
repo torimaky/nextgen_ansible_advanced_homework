@@ -1,3 +1,13 @@
 ---
-
 # tasks file for osp.servers
+- name: Create OSP keypair 2nd key_pair
+  include_tasks: create-second-key.yaml
+
+- name: Define servers
+  include_tasks: define-server.yaml
+  loop: "{{ osp_servers }}"
+  loop_control:
+    loop_var: _server
+    label: "{{ _server.name }}"
+
+

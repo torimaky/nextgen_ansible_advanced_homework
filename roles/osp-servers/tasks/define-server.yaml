@@ -1,0 +1,51 @@
+---
+- name: Test value {{ _server.name }}
+  debug:
+    msg:  "{{_server.name}}"
+
+- name: Create server {{ _server.name }}
+  os_server:
+    name: "{{ _server.name }}"
+    cloud: openstack
+    image: "{{ _server.image }}"
+    #key_name: "{{ _server.key_name }}"
+    key_name: second_key_pair
+    flavor: "{{ _server.flavor | default('m2.small') }}"
+    #flavor: "{{ _server.flavor  }}"
+    #security_groups: "{{ _server.security_group | default(_server.group) }}"
+    security_groups: "{{ _server.security_group  }}"
+    auto_ip: false
+    wait: true
+    nics:
+    - net-name: "{{ _server.network | default('int_network') }}"
+    meta:
+      group: "{{ _server.meta[0].group }}"
+      deployment_name: "{{ _server.meta[0].deployment_name }}"
+    userdata: |
+      #!/bin/bash
+      echo "Provisioned on $(date)" >/root/provision.txt
+      #cat /root/.ssh/openstack.pub >> /home/cloud-user/.ssh/authoirzed_keys
+ #     curl -o /tmp/local.repo http://www.opentlc.com/download/ansible_bootcamp/repo/internal.repo
+ #     cp /tmp/local.repo /etc/yum.repos.d/internal.repo
+
+  register: r_os_server
+
+- name: Start server {{ _server.name }}
+  when: r_os_server.server.vm_state == 'stopped'
+  os_server_action:
+    server: "{{ _server.name }}"
+    cloud: openstack
+    action: start
+
+- name: Add floating IP to {{ _server.name }}
+  os_floating_ip:
+    cloud: openstack
+    reuse: true
+    server: "{{ _server.name }}"
+    network: "{{ _server.floating_ip_network | default('ext_network') }}"
+    wait: true
+    timeout: 200 
+  register: r_floating_ip
+
+#- name: Debug "{{ r_os_server }}"  
+#  debug: var=r_os_server

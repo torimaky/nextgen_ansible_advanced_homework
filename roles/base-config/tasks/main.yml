@@ -9,6 +9,67 @@
     backup: yes
 
 - name: enable repos
- 
-- name: install base tools and packages
+  yum_repository:
+    name: Fast
+    description: rhel-7-fast-datapath-rpms
+    baseurl: "{{own_repo_path}}/rhel-7-fast-datapath-rpms"
+    gpgcheck: no
+    enabled: yes
 
+- name: enable repos 3
+  yum_repository:
+    name: Com
+    description: rhel-7-server-rh-common-rpms
+    baseurl: "{{own_repo_path}}/rhel-7-server-rh-common-rpms"
+    gpgcheck: no
+    enabled: yes
+
+- name: enable repos 4
+  yum_repository:
+    name: rhscl
+    description: rhel-server-rhscl-7-rpms
+    baseurl: "{{own_repo_path}}/rhel-server-rhscl-7-rpms"
+    gpgcheck: no
+    enabled: yes
+
+
+
+- name: enable repos 5
+  yum_repository:
+    name: rpm
+    description: rhel-7-server-rpms
+    baseurl: "{{own_repo_path}}/rhel-7-server-rpms"
+    gpgcheck: no
+    enabled: yes
+
+
+- name: enable repos 6
+  yum_repository:
+    name: extra
+    description: rhel-7-server-extras-rpms
+    baseurl: "{{own_repo_path}}/rhel-7-server-extras-rpms"
+    gpgcheck: no
+    enabled: yes
+
+
+- name: enable repos 7
+  yum_repository:
+    name: opt
+    description: rhel-7-server-optional-rpms
+    baseurl: "{{own_repo_path}}/rhel-7-server-optional-rpms"
+    gpgcheck: no
+    enabled: yes
+
+
+- debug: var=own_repo_path
+- name: install base tools and packages
+  package:
+    name:
+      - haproxy
+#      - python2-httpie
+    state: latest
+
+#- name: Enable service haproxy  and not touch the state
+#  service:
+#    name:  haproxy
+#    enabled: yes

@@ -1,0 +1,20 @@
+---
+- name: install postgres
+  yum:
+    name: postgresql-server
+    state: latest
+
+- name: Check for initdb.log
+  stat:
+    path: /var/lib/pgsql/initdb.log
+  register: r_check_initdb_log
+  
+- name: initilize postgres
+  command: postgresql-setup initdb
+  when: not r_check_initdb_log.stat.exists
+
+- name: start postgres
+  service:
+    name: postgresql
+    state: started
+    enabled: True

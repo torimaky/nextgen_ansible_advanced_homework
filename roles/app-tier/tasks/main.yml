@@ -1,2 +1,23 @@
 ---
+- name: Install Tomcat
+  yum:
+    name: "{{payload}}"
+    state: latest
+
+- name: Tomcat Root Directory
+  file:
+    path: /usr/share/tomcat/webapps/ROOT
+    state: directory
+
+- name: Copy Static index.html to tomcat ROOT
+  template:
+    src: index.html.j2
+    dest: "{{tomcat_web_root}}/index.html"
+    mode: 0644
+
+- name: start tomcat
+  service:
+    name: tomcat
+    state: started
+    enabled: yes
 
